@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { SequelizeModule } from '@nestjs/sequelize';
@@ -21,7 +21,8 @@ import { RtStrategy } from './strategies/rt.strategy';
       inject: [ConfigService],
       useFactory: getJWTConfig,
     }),
-    UsersModule,
+    forwardRef(() => UsersModule),
   ],
+  exports: [JwtModule],
 })
 export class AuthModule {}

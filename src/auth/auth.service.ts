@@ -3,7 +3,7 @@ import { RegisterUserDto } from './dto/register.user.dto';
 import { UsersService } from '../users/users.service';
 import { compare, genSalt, hash } from 'bcryptjs';
 import { LoginUserDto } from './dto/login.user.dto';
-import { removePasswordFromReturnedFields } from '../utils/helpers';
+import { removeExtraFromReturnedFields } from '../utils/helpers';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { UserModel } from '../users/user.model';
@@ -34,7 +34,8 @@ export class AuthService {
   }
 
   async generateTokens(user: UserModel) {
-    const payload = { id: user.id, email: user.email };
+    const data = removeExtraFromReturnedFields(user);
+    const payload = { id: data.id, email: data.email, roles: data.roles };
     const accessToken = await this.jwtService.signAsync(payload, {
       expiresIn: '15m',
       secret: this.configService.get('JWT_ACCESS_SECRET'),
@@ -55,7 +56,7 @@ export class AuthService {
     });
     const { accessToken, refreshToken } = await this.generateTokens(user);
     return {
-      ...removePasswordFromReturnedFields(user),
+      ...removeExtraFromReturnedFields(user),
       accessToken,
       refreshToken,
     };
@@ -65,7 +66,7 @@ export class AuthService {
     const user = await this.validateUser(dto);
     const { accessToken, refreshToken } = await this.generateTokens(user);
     return {
-      ...removePasswordFromReturnedFields(user),
+      ...removeExtraFromReturnedFields(user),
       accessToken,
       refreshToken,
     };
