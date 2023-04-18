@@ -4,10 +4,24 @@ import { AuthController } from './auth.controller';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { UserModel } from '../users/user.model';
 import { UsersModule } from '../users/users.module';
+import { JwtModule } from '@nestjs/jwt';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { getJWTConfig } from '../config/jwt.config';
+import { AtStrategy } from './strategies/at.strategy';
+import { RtStrategy } from './strategies/rt.strategy';
 
 @Module({
-  providers: [AuthService],
+  providers: [AuthService, AtStrategy, RtStrategy],
   controllers: [AuthController],
-  imports: [SequelizeModule.forFeature([UserModel]), UsersModule],
+  imports: [
+    ConfigModule,
+    SequelizeModule.forFeature([UserModel]),
+    JwtModule.registerAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: getJWTConfig,
+    }),
+    UsersModule,
+  ],
 })
 export class AuthModule {}

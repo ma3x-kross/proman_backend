@@ -2,7 +2,6 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { UserModel } from './user.model';
 import { InjectModel } from '@nestjs/sequelize';
 import { RegisterUserDto } from '../auth/dto/register.user.dto';
-import { removePasswordFromReturnedFields } from '../utils/helpers';
 
 @Injectable()
 export class UsersService {
@@ -14,8 +13,7 @@ export class UsersService {
       throw new BadRequestException(
         'Пользователь с таким email уже существует',
       );
-    const user = await this.userModel.create(dto);
-    return removePasswordFromReturnedFields(user);
+    return await this.userModel.create(dto);
   }
 
   async getByEmail(email: string) {
@@ -25,10 +23,9 @@ export class UsersService {
   async getAll() {
     const user = await this.getByEmail('@mail.ru');
     if (user) return user;
-    const users = await this.userModel.findAll({
+    return await this.userModel.findAll({
       attributes: { exclude: ['password'] },
     });
-    return users;
   }
 
   async delete(id: number) {

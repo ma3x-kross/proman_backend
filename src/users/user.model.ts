@@ -20,4 +20,7 @@ export class UserModel extends Model<UserModel, UserCreationAttr> {
 
   @Column({ type: DataType.STRING, allowNull: false })
   password: string;
+
+  @Column({ type: DataType.STRING })
+  refreshToken: string;
 }
