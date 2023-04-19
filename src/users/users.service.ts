@@ -4,12 +4,14 @@ import { InjectModel } from '@nestjs/sequelize';
 import { RegisterUserDto } from '../auth/dto/register.user.dto';
 import { RolesService } from '../roles/roles.service';
 import { AddRoleToUserDto } from './dto/add.role.to.user.dto';
+import { MailService } from '../mail/mail.service';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectModel(UserModel) private userModel: typeof UserModel,
     private rolesService: RolesService,
+    private mailService: MailService,
   ) {}
 
   async create(dto: RegisterUserDto) {
@@ -21,6 +23,7 @@ export class UsersService {
     const user = await this.userModel.create(dto);
     const role = await this.rolesService.getByValue('DEVELOPER');
     await user.$set('roles', role.id);
+    await this.mailService.sendConfirmMail(user);
     return await this.userModel.findByPk(user.id, { include: ['roles'] });
   }
 

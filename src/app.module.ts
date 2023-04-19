@@ -1,12 +1,15 @@
 import { Module } from '@nestjs/common';
 import { SequelizeModule } from '@nestjs/sequelize';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
 import { UserModel } from './users/user.model';
 import { UsersModule } from './users/users.module';
 import { RolesModule } from './roles/roles.module';
 import { RolesModel } from './roles/models/roles.model';
 import { UserRolesModel } from './roles/models/user.roles.model';
+import { MailerModule } from '@nestjs-modules/mailer';
+import { getMailConfig } from './config/mail.config';
+import { MailModule } from './mail/mail.module';
 
 @Module({
   imports: [
@@ -23,9 +26,15 @@ import { UserRolesModel } from './roles/models/user.roles.model';
       models: [UserModel, RolesModel, UserRolesModel],
       autoLoadModels: true,
     }),
+    MailerModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: getMailConfig,
+    }),
     AuthModule,
     UsersModule,
     RolesModule,
+    MailModule,
   ],
   controllers: [],
   providers: [],
