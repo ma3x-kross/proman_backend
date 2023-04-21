@@ -2,12 +2,19 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { UserModel } from '../users/user.model';
 import { join } from 'path';
 import { MailerService } from '@nestjs-modules/mailer';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class MailService {
-  constructor(private mailerService: MailerService) {}
+  constructor(
+    private mailerService: MailerService,
+    private configService: ConfigService,
+  ) {}
   async sendConfirmMail(user: UserModel) {
-    const urlConfirmAddress = 'ссылка';
+    console.log(`MAILSERVICE ${user.activationLink}`);
+    const urlConfirmAddress = `${this.configService.get(
+      'API_URL',
+    )}/api/auth/register/${user.activationLink}`;
     // Отправка почты
     return await this.mailerService
       .sendMail({
@@ -15,7 +22,6 @@ export class MailService {
         subject: 'Приглашение в систему Proman',
         template: join(__dirname, '/../templates', 'inviteLetter'),
         context: {
-          id: user.id,
           username: user.email,
           urlConfirmAddress,
         },

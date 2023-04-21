@@ -1,9 +1,9 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { RegisterUserDto } from './dto/register.user.dto';
 import { UsersService } from '../users/users.service';
-import { compare, genSalt, hash } from 'bcryptjs';
+import { compare } from 'bcryptjs';
 import { LoginUserDto } from './dto/login.user.dto';
-import { removeExtraFromReturnedFields } from '../utils/helpers';
+import { hashValue, removeExtraFromReturnedFields } from '../utils/helpers';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { UserModel } from '../users/user.model';
@@ -16,11 +16,6 @@ export class AuthService {
     private jwtService: JwtService,
     private configService: ConfigService,
   ) {}
-
-  async hashValue(value: string) {
-    const salt = await genSalt(10);
-    return await hash(value, salt);
-  }
 
   async validateUser(dto: LoginUserDto) {
     const user = await this.userService.getByEmail(dto.email);
@@ -37,23 +32,26 @@ export class AuthService {
     const data = removeExtraFromReturnedFields(user);
     const payload = { id: data.id, email: data.email, roles: data.roles };
     const accessToken = await this.jwtService.signAsync(payload, {
-      expiresIn: '15m',
+      expiresIn: '24h',
       secret: this.configService.get('JWT_ACCESS_SECRET'),
     });
     const refreshToken = await this.jwtService.signAsync(payload, {
       expiresIn: '30d',
       secret: this.configService.get('JWT_REFRESH_SECRET'),
     });
-    await user.update({ refreshToken: await this.hashValue(refreshToken) });
+    await user.update({ refreshToken: await hashValue(refreshToken) });
     await user.save();
     return { accessToken, refreshToken };
   }
 
-  async register(dto: RegisterUserDto): Promise<UserWithTokens> {
-    const user = await this.userService.create({
-      ...dto,
-      password: await this.hashValue(dto.password),
-    });
+  async register(dto: RegisterUserDto, link: string): Promise<UserWithTokens> {
+    const user = await this.userService.activate(
+      {
+        ...dto,
+        password: await hashValue(dto.password),
+      },
+      link,
+    );
     const { accessToken, refreshToken } = await this.generateTokens(user);
     return {
       ...removeExtraFromReturnedFields(user),

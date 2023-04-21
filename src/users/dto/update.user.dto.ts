@@ -1,5 +1,7 @@
-export class RegisterUserDto {
-  password: string;
+export class UpdateUserDto {
+  email: string;
+
+  password?: string;
 
   fullName: string;
 

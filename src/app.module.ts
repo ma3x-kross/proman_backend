@@ -10,6 +10,8 @@ import { UserRolesModel } from './roles/models/user.roles.model';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { getMailConfig } from './config/mail.config';
 import { MailModule } from './mail/mail.module';
+import { ProfileModule } from './profile/profile.module';
+import { ProfileModel } from './profile/profile.model';
 
 @Module({
   imports: [
@@ -23,7 +25,7 @@ import { MailModule } from './mail/mail.module';
       username: process.env.POSTGRES_USER,
       password: process.env.POSTGRES_PASSWORD,
       database: process.env.POSTGRES_DB,
-      models: [UserModel, RolesModel, UserRolesModel],
+      models: [UserModel, RolesModel, UserRolesModel, ProfileModel],
       autoLoadModels: true,
     }),
     MailerModule.forRootAsync({
@@ -35,6 +37,7 @@ import { MailModule } from './mail/mail.module';
     UsersModule,
     RolesModule,
     MailModule,
+    ProfileModule,
   ],
   controllers: [],
   providers: [],

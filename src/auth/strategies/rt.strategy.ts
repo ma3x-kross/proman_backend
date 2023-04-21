@@ -27,7 +27,7 @@ export class RtStrategy extends PassportStrategy(Strategy, 'rt-jwt') {
 
   async validate(req: Request, { id }: Pick<UserModel, 'id'>): Promise<any> {
     const oldRefreshToken = req.cookies.refresh;
-    const user = await this.userModel.findByPk(id);
+    const user = await this.userModel.findByPk(id, { include: { all: true } });
     if (!user) throw new UnauthorizedException('Пользователь не найден!');
     const compareTokens = await compare(oldRefreshToken, user.refreshToken);
     if (!compareTokens) throw new UnauthorizedException('Неверный токен!');

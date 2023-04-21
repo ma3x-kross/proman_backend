@@ -8,6 +8,7 @@ import { UserRolesModel } from '../roles/models/user.roles.model';
 import { RolesModule } from '../roles/roles.module';
 import { AuthModule } from '../auth/auth.module';
 import { MailModule } from '../mail/mail.module';
+import { ProfileModule } from '../profile/profile.module';
 
 @Module({
   providers: [UsersService],
@@ -17,6 +18,7 @@ import { MailModule } from '../mail/mail.module';
     forwardRef(() => AuthModule),
     RolesModule,
     MailModule,
+    ProfileModule,
   ],
   exports: [UsersService],
 })
