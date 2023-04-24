@@ -39,6 +39,7 @@ export class ProfileService {
 
   async delete(userId: number) {
     const profile = await this.getByUserId(userId);
+    console.log('sfdsdfhgwdh');
     await profile.destroy();
   }
 }

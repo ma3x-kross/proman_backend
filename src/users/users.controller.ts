@@ -14,7 +14,6 @@ import { InviteUserDto } from './dto/invite.user.dto';
 import { removeExtraFromReturnedFields } from '../utils/helpers';
 import { UpdateUserDto } from './dto/update.user.dto';
 import { User } from './decorators/user.decorator';
-import { UserModel } from './user.model';
 
 @Controller('users')
 export class UsersController {

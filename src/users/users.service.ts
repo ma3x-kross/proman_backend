@@ -92,14 +92,15 @@ export class UsersService {
   async update(id: number, dto: UpdateUserDto) {
     const user = await this.getOne(id);
 
-    const isSameUser = await this.getByEmail(dto.email);
-    if (isSameUser && isSameUser.id != id)
-      throw new BadRequestException('Данный email занят');
+    if (dto.email) {
+      const isSameUser = await this.getByEmail(dto.email);
+      if (isSameUser && isSameUser.id != id)
+        throw new BadRequestException('Данный email занят');
+      user.email = dto.email;
+    }
 
     if (user.profile) await this.profileService.update(id, dto);
     else await this.profileService.create(user.id, dto as RegisterUserDto);
-
-    user.email = dto.email;
 
     if (dto.password) user.password = await hashValue(dto.password);
 
@@ -109,7 +110,7 @@ export class UsersService {
   }
 
   async delete(id: number) {
-    const user = await this.userModel.findByPk(id);
+    const user = await this.userModel.findByPk(id, { include: { all: true } });
     if (!user) throw new BadRequestException('Пользователь не найден');
     if (user.profile) await this.profileService.delete(user.id);
     await user.destroy();

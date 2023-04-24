@@ -39,7 +39,7 @@ export class AuthController {
     const { accessToken, refreshToken, ...user } =
       await this.authService.register(dto, link);
     res.cookie('refresh', refreshToken, { httpOnly: true });
-    return { ...user, accessToken };
+    return { user, accessToken };
   }
 
   // @Post('register')
@@ -62,7 +62,7 @@ export class AuthController {
       dto,
     );
     res.cookie('refresh', refreshToken, { httpOnly: true });
-    return { ...user, accessToken };
+    return { user, accessToken };
   }
 
   @UseGuards(RtJwtAuthGuard)
