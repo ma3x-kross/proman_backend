@@ -60,6 +60,12 @@ export class UsersController {
     await this.userService.delete(id);
   }
 
+  @Auth()
+  @Delete('delete/self')
+  async deleteSelf(@User('id') id: number) {
+    await this.userService.delete(id);
+  }
+
   @Auth('ADMIN')
   @Post('add-role')
   async addRole(@Body() dto: AddRoleToUserDto) {
