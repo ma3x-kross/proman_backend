@@ -7,7 +7,7 @@ import { hashValue, removeExtraFromReturnedFields } from '../utils/helpers';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { UserModel } from '../users/user.model';
-import { UserWithTokens } from './interfaces/auth.interface';
+import { UserWithTokens } from './responses/auth.response';
 
 @Injectable()
 export class AuthService {
