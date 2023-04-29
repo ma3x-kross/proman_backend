@@ -12,6 +12,10 @@ import { getMailConfig } from './config/mail.config';
 import { MailModule } from './mail/mail.module';
 import { ProfileModule } from './profile/profile.module';
 import { ProfileModel } from './profile/profile.model';
+import { ProjectsModule } from './projects/projects.module';
+import { ProjectsModel } from './projects/models/projects.model';
+import { DeveloperProjectsModel } from './projects/models/developer.projects.model';
+import { RelatedProjectsModel } from './projects/models/related.projects.model';
 
 @Module({
   imports: [
@@ -25,7 +29,15 @@ import { ProfileModel } from './profile/profile.model';
       username: process.env.POSTGRES_USER,
       password: process.env.POSTGRES_PASSWORD,
       database: process.env.POSTGRES_DB,
-      models: [UserModel, RolesModel, UserRolesModel, ProfileModel],
+      models: [
+        UserModel,
+        RolesModel,
+        UserRolesModel,
+        ProfileModel,
+        ProjectsModel,
+        DeveloperProjectsModel,
+        RelatedProjectsModel,
+      ],
       autoLoadModels: true,
     }),
     MailerModule.forRootAsync({
@@ -38,6 +50,7 @@ import { ProfileModel } from './profile/profile.model';
     RolesModule,
     MailModule,
     ProfileModule,
+    ProjectsModule,
   ],
   controllers: [],
   providers: [],

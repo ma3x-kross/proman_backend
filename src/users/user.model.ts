@@ -2,6 +2,7 @@ import {
   BelongsToMany,
   Column,
   DataType,
+  HasMany,
   HasOne,
   Model,
   Table,
@@ -9,12 +10,13 @@ import {
 import { RolesModel } from '../roles/models/roles.model';
 import { UserRolesModel } from '../roles/models/user.roles.model';
 import { ProfileModel } from '../profile/profile.model';
+import { ProjectsModel } from '../projects/models/projects.model';
+import { DeveloperProjectsModel } from '../projects/models/developer.projects.model';
 
 interface UserCreationAttr {
   email: string;
   activationLink: string;
   activationExpire: number;
-  // password: string;
 }
 
 @Table({ tableName: 'users' })
@@ -47,4 +49,10 @@ export class UserModel extends Model<UserModel, UserCreationAttr> {
 
   @HasOne(() => ProfileModel)
   profile: ProfileModel;
+
+  @HasMany(() => ProjectsModel)
+  projects: ProjectsModel[];
+
+  @BelongsToMany(() => ProjectsModel, () => DeveloperProjectsModel)
+  developersProjects: ProjectsModel[];
 }

@@ -19,7 +19,7 @@ import { User } from './decorators/user.decorator';
 export class UsersController {
   constructor(private userService: UsersService) {}
 
-  @Auth('ADMIN')
+  // @Auth('ADMIN')
   @Post('invite')
   async invite(@Body() dto: InviteUserDto) {
     return removeExtraFromReturnedFields(await this.userService.invite(dto));
@@ -35,6 +35,12 @@ export class UsersController {
   @Auth('ADMIN', 'MANAGER')
   @Get(':id')
   async getOne(@Param('id') id: number) {
+    return removeExtraFromReturnedFields(await this.userService.getOne(id));
+  }
+
+  @Auth()
+  @Get('/get/self')
+  async getSelf(@User('id') id: number) {
     return removeExtraFromReturnedFields(await this.userService.getOne(id));
   }
 

@@ -9,7 +9,7 @@ import {
 export class UpdateUserDto {
   @IsOptional()
   @IsEmail()
-  email: string;
+  email?: string;
 
   @IsOptional()
   @IsString()
@@ -18,14 +18,14 @@ export class UpdateUserDto {
 
   @IsOptional()
   @IsString()
-  fullName: string;
+  fullName?: string;
 
   @IsOptional()
   @IsString()
   @MaxLength(13)
-  phone: string;
+  phone?: string;
 
   @IsOptional()
   @IsString()
-  telegramUsername: string;
+  telegramUsername?: string;
 }
