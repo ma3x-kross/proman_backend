@@ -64,16 +64,33 @@ export class ProjectsModel extends Model<ProjectsModel, ProjectsCreationAttr> {
   @Column({ type: DataType.INTEGER, allowNull: false })
   plannedHours: number;
 
+  @Column({ type: DataType.INTEGER, defaultValue: 0 })
+  workedHours: number;
+
+  @Column({ type: DataType.INTEGER, defaultValue: 0 })
+  salary: number;
+
   @Column({ type: DataType.INTEGER, allowNull: false })
   rate: number;
 
   @Column({
     type: DataType.VIRTUAL,
     get() {
-      return this.getDataValue('plannedHours') * this.getDataValue('rate');
+      return this.getDataValue('workedHours') * this.getDataValue('rate');
     },
   })
   cost: number;
+
+  @Column({
+    type: DataType.VIRTUAL,
+    get() {
+      return (
+        this.getDataValue('workedHours') * this.getDataValue('rate') -
+        this.getDataValue('salary')
+      );
+    },
+  })
+  profit: number;
 
   @ForeignKey(() => UserModel)
   managerId: number;
