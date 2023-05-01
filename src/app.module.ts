@@ -16,6 +16,10 @@ import { ProjectsModule } from './projects/projects.module';
 import { ProjectsModel } from './projects/models/projects.model';
 import { DeveloperProjectsModel } from './projects/models/developer.projects.model';
 import { RelatedProjectsModel } from './projects/models/related.projects.model';
+import { HoursModule } from './hours/hours.module';
+import { HoursModel } from './hours/hours.model';
+import { PayrollModule } from './payroll/payroll.module';
+import { RateModel } from './payroll/models/rate.model';
 
 @Module({
   imports: [
@@ -37,6 +41,8 @@ import { RelatedProjectsModel } from './projects/models/related.projects.model';
         ProjectsModel,
         DeveloperProjectsModel,
         RelatedProjectsModel,
+        HoursModel,
+        RateModel,
       ],
       autoLoadModels: true,
     }),
@@ -51,6 +57,8 @@ import { RelatedProjectsModel } from './projects/models/related.projects.model';
     MailModule,
     ProfileModule,
     ProjectsModule,
+    HoursModule,
+    PayrollModule,
   ],
   controllers: [],
   providers: [],

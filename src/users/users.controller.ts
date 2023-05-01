@@ -6,6 +6,7 @@ import {
   Param,
   Post,
   Put,
+  Query,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { AddRoleToUserDto } from './dto/add.role.to.user.dto';
@@ -19,37 +20,35 @@ import { User } from './decorators/user.decorator';
 export class UsersController {
   constructor(private userService: UsersService) {}
 
-  // @Auth('ADMIN')
+  @Auth('ADMIN')
   @Post('invite')
   async invite(@Body() dto: InviteUserDto) {
-    return removeExtraFromReturnedFields(await this.userService.invite(dto));
+    return await this.userService.invite(dto);
   }
 
   @Auth('ADMIN', 'MANAGER')
   @Get()
-  async getAll() {
-    const users = await this.userService.getAll();
-    return users.map((user) => removeExtraFromReturnedFields(user));
+  async getAll(@Query('role') role: string) {
+    const users = await this.userService.getAll(role);
+    return users;
   }
 
   @Auth('ADMIN', 'MANAGER')
   @Get(':id')
   async getOne(@Param('id') id: number) {
-    return removeExtraFromReturnedFields(await this.userService.getOne(id));
+    return await this.userService.getOne(id);
   }
 
   @Auth()
   @Get('/get/self')
   async getSelf(@User('id') id: number) {
-    return removeExtraFromReturnedFields(await this.userService.getOne(id));
+    return await this.userService.getOne(id);
   }
 
   @Auth('ADMIN')
   @Put(':id')
   async update(@Param('id') id: number, @Body() dto: UpdateUserDto) {
-    return removeExtraFromReturnedFields(
-      await this.userService.update(id, dto),
-    );
+    return await this.userService.update(id, dto);
   }
 
   @Auth()

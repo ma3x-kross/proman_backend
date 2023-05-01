@@ -6,6 +6,7 @@ import { ProjectsModel } from './models/projects.model';
 import { UserModel } from '../users/user.model';
 import { DeveloperProjectsModel } from './models/developer.projects.model';
 import { RelatedProjectsModel } from './models/related.projects.model';
+import { AuthModule } from '../auth/auth.module';
 
 @Module({
   providers: [ProjectsService],
@@ -17,6 +18,8 @@ import { RelatedProjectsModel } from './models/related.projects.model';
       DeveloperProjectsModel,
       RelatedProjectsModel,
     ]),
+    AuthModule,
   ],
+  exports: [ProjectsService],
 })
 export class ProjectsModule {}

@@ -6,6 +6,8 @@ import { UserModel } from '../users/user.model';
 import { DeveloperProjectsModel } from './models/developer.projects.model';
 import { UpdateProjectDto } from './dto/update.project.dto';
 import { RelatedProjectsModel } from './models/related.projects.model';
+import { Op } from 'sequelize';
+import { projectQueryOptions } from '../utils/query.options';
 
 @Injectable()
 export class ProjectsService {
@@ -36,13 +38,6 @@ export class ProjectsService {
     }
     if (dto.relatedProjectId) {
       await this.addRelatedProject(project.id, dto.relatedProjectId);
-      // const relatedProject = await this.projectsModel.findByPk(
-      //   dto.relatedProjectId,
-      // );
-      // if (!relatedProject || project.id === dto.relatedProjectId) {
-      //   throw new BadRequestException('Связанный проект не найден');
-      // }
-      // await project.$add('relatedProjects', relatedProject.id);
     }
     return await this.getById(project.id);
   }
@@ -106,62 +101,22 @@ export class ProjectsService {
   }
 
   async getById(id: number) {
-    const project = await this.projectsModel.findByPk(id, {
-      attributes: { exclude: ['createdAt', 'updatedAt'] },
-      include: [
-        {
-          model: UserModel,
-          as: 'manager',
-          attributes: ['id', 'email'],
-          required: false,
-          include: ['profile'],
-        },
-        {
-          model: UserModel,
-          as: 'developers',
-          attributes: ['id', 'email'],
-          through: { attributes: [] },
-          include: ['profile'],
-        },
-        {
-          model: ProjectsModel,
-          as: 'relatedProjects',
-          attributes: ['id', 'name'],
-          through: { attributes: [] },
-        },
-      ],
-    });
+    const project = await this.projectsModel.findByPk(id, projectQueryOptions);
     if (!project) throw new BadRequestException('Проект не найден');
     return project;
   }
 
   async getAll() {
-    const projects = await this.projectsModel.findAll({
-      attributes: { exclude: ['createdAt', 'updatedAt'] },
-      include: [
-        {
-          model: UserModel,
-          as: 'manager',
-          attributes: ['id', 'email'],
-          required: false,
-          include: ['profile'],
-        },
-        {
-          model: UserModel,
-          as: 'developers',
-          attributes: ['id', 'email'],
-          through: { attributes: [] },
-          include: ['profile'],
-        },
-        {
-          model: ProjectsModel,
-          as: 'relatedProjects',
-          attributes: ['id', 'name'],
-          through: { attributes: [] },
-        },
-      ],
-    });
+    const projects = await this.projectsModel.findAll(projectQueryOptions);
     if (!projects) throw new BadRequestException('Проекты не найден');
+    return projects;
+  }
+
+  async getAllMyProjects(id: number) {
+    const projects = await this.projectsModel.findAll({
+      where: { managerId: id },
+      ...projectQueryOptions,
+    });
     return projects;
   }
 
@@ -176,5 +131,23 @@ export class ProjectsService {
       where: { name },
       include: { all: true },
     });
+  }
+
+  async getDevelopersProject(projectId: number, developerId: number) {
+    const project = await this.projectsModel.findOne({
+      where: { id: projectId },
+      include: [
+        {
+          model: UserModel,
+          as: 'developers',
+          attributes: [],
+          where: {
+            id: { [Op.eq]: developerId },
+          },
+        },
+      ],
+    });
+    if (!project) throw new BadRequestException('Проект не найден');
+    return project;
   }
 }

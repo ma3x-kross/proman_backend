@@ -11,6 +11,12 @@ import { hashValue, removeExtraFromReturnedFields } from '../utils/helpers';
 import { Op } from 'sequelize';
 import { ProfileService } from '../profile/profile.service';
 import { UpdateUserDto } from './dto/update.user.dto';
+import { PayrollService } from '../payroll/payroll.service';
+import { RolesModel } from '../roles/models/roles.model';
+import { ProfileModel } from '../profile/profile.model';
+import { userQueryOptions } from '../utils/query.options';
+import { ProjectsModel } from '../projects/models/projects.model';
+import { HoursModel } from '../hours/hours.model';
 
 @Injectable()
 export class UsersService {
@@ -19,6 +25,7 @@ export class UsersService {
     private rolesService: RolesService,
     private mailService: MailService,
     private profileService: ProfileService,
+    private payrollService: PayrollService,
   ) {}
 
   // async create(dto: RegisterUserDto) {
@@ -49,8 +56,17 @@ export class UsersService {
     });
     const entityRole = await this.rolesService.getByValue(role);
     await user.$set('roles', entityRole.id);
+
+    if (role === 'DEVELOPER') {
+      await this.payrollService.addRate({
+        developerId: user.id,
+        value: 100,
+        date: new Date(),
+      });
+    }
+
     await this.mailService.sendConfirmMail(user);
-    return await this.userModel.findByPk(user.id, { include: ['roles'] });
+    return await this.userModel.findByPk(user.id, { ...userQueryOptions });
   }
 
   async activate(dto: RegisterUserDto, activationLink: string) {
@@ -76,15 +92,45 @@ export class UsersService {
     });
   }
 
-  async getAll() {
+  async getAll(role?: string) {
+    const where = role ? { value: role } : null;
     const users = await this.userModel.findAll({
-      include: { all: true },
+      attributes: ['id'],
+      include: [
+        {
+          model: RolesModel,
+          as: 'roles',
+          attributes: ['value'],
+          through: { attributes: [] },
+          where: where,
+        },
+      ],
     });
-    return users;
+    const promises = users.map((user) => this.getOne(user.id));
+    return Promise.all(promises);
   }
 
   async getOne(id: number) {
-    const user = await this.userModel.findByPk(id, { include: { all: true } });
+    const user = await this.userModel.findByPk(id, {
+      ...userQueryOptions,
+      include: [
+        ...userQueryOptions.include,
+        {
+          model: ProjectsModel,
+          as: 'developersProjects',
+          attributes: ['name'],
+          through: { attributes: [] },
+          include: [
+            {
+              model: HoursModel,
+              as: 'hours',
+              attributes: ['value', 'date', 'developerId'],
+              where: { developerId: id },
+            },
+          ],
+        },
+      ].filter(Boolean),
+    });
     if (!user) throw new BadRequestException('Пользователь не найден');
     return user;
   }

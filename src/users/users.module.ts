@@ -9,6 +9,7 @@ import { RolesModule } from '../roles/roles.module';
 import { AuthModule } from '../auth/auth.module';
 import { MailModule } from '../mail/mail.module';
 import { ProfileModule } from '../profile/profile.module';
+import { PayrollModule } from '../payroll/payroll.module';
 
 @Module({
   providers: [UsersService],
@@ -19,6 +20,7 @@ import { ProfileModule } from '../profile/profile.module';
     RolesModule,
     MailModule,
     ProfileModule,
+    forwardRef(() => PayrollModule),
   ],
   exports: [UsersService],
 })

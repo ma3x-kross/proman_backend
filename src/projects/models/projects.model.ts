@@ -4,12 +4,14 @@ import {
   Column,
   DataType,
   ForeignKey,
+  HasMany,
   Model,
   Table,
 } from 'sequelize-typescript';
 import { UserModel } from '../../users/user.model';
 import { DeveloperProjectsModel } from './developer.projects.model';
 import { RelatedProjectsModel } from './related.projects.model';
+import { HoursModel } from '../../hours/hours.model';
 
 export enum ProjectStatus {
   NEGOTIATION = 'Переговоры',
@@ -108,4 +110,7 @@ export class ProjectsModel extends Model<ProjectsModel, ProjectsCreationAttr> {
     'targetProjectId',
   )
   relatedProjects: ProjectsModel[];
+
+  @HasMany(() => HoursModel)
+  hours: HoursModel[];
 }
