@@ -12,6 +12,8 @@ import { UserRolesModel } from '../roles/models/user.roles.model';
 import { ProfileModel } from '../profile/profile.model';
 import { ProjectsModel } from '../projects/models/projects.model';
 import { DeveloperProjectsModel } from '../projects/models/developer.projects.model';
+import { HoursModel } from '../hours/hours.model';
+import { RateModel } from '../payroll/models/rate.model';
 
 interface UserCreationAttr {
   email: string;
@@ -55,4 +57,10 @@ export class UserModel extends Model<UserModel, UserCreationAttr> {
 
   @BelongsToMany(() => ProjectsModel, () => DeveloperProjectsModel)
   developersProjects: ProjectsModel[];
+
+  @HasMany(() => HoursModel)
+  hours: HoursModel[];
+
+  @HasMany(() => RateModel)
+  developerRates: RateModel[];
 }
