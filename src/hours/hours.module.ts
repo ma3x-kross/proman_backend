@@ -5,12 +5,13 @@ import { SequelizeModule } from '@nestjs/sequelize';
 import { HoursModel } from './hours.model';
 import { ProjectsModule } from '../projects/projects.module';
 import { RateModel } from '../payroll/models/rate.model';
+import { UserModel } from '../users/user.model';
 
 @Module({
   providers: [HoursService],
   controllers: [HoursController],
   imports: [
-    SequelizeModule.forFeature([HoursModel, RateModel]),
+    SequelizeModule.forFeature([HoursModel, RateModel, UserModel]),
     ProjectsModule,
   ],
 })

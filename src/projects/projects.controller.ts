@@ -29,7 +29,7 @@ export class ProjectsController {
   async addRelatedProject(
     @Body() dto: { sourceProjectId: number; targetProjectId: number },
   ) {
-    await this.projectsService.addRelatedProject(
+    return await this.projectsService.addRelatedProject(
       dto.sourceProjectId,
       dto.targetProjectId,
     );
@@ -41,7 +41,7 @@ export class ProjectsController {
     @Query('source') sourceProjectId: number,
     @Query('target') targetProjectId: number,
   ) {
-    await this.projectsService.deleteRelatedProject(
+    return await this.projectsService.deleteRelatedProject(
       sourceProjectId,
       targetProjectId,
     );
@@ -52,7 +52,10 @@ export class ProjectsController {
   async assignDeveloper(
     @Body() dto: { developerId: number; projectId: number },
   ) {
-    await this.projectsService.assignDeveloper(dto.developerId, dto.projectId);
+    return await this.projectsService.assignDeveloper(
+      dto.developerId,
+      dto.projectId,
+    );
   }
 
   @Auth('ADMIN', 'MANAGER')

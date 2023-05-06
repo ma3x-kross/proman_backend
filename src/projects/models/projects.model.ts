@@ -21,7 +21,7 @@ export enum ProjectStatus {
   BURN = 'Горит',
   OS_WAITING = 'Ждем ОС клиента',
   INSTRUCTIONS_WRITING = 'Пишем инструкцию',
-  TESTING = 'Внутрненне тестирование',
+  TESTING = 'Внутреннее тестирование',
   EDIT = 'Вносим правки',
   ADVERTISING = 'Реклама',
   TECHNICAL_SUPPORT = 'Техподдержка',
@@ -60,7 +60,7 @@ export class ProjectsModel extends Model<ProjectsModel, ProjectsCreationAttr> {
   })
   status: ProjectStatus;
 
-  @Column({ type: DataType.DATE, allowNull: true })
+  @Column({ type: DataType.DATEONLY, allowNull: true })
   deadline: Date;
 
   @Column({ type: DataType.INTEGER, allowNull: false })

@@ -7,12 +7,14 @@ import { RateModel } from '../payroll/models/rate.model';
 import { Op } from 'sequelize';
 import { UserModel } from '../users/user.model';
 import { ProjectsModel } from '../projects/models/projects.model';
+import { ProfileModel } from '../profile/profile.model';
 
 @Injectable()
 export class HoursService {
   constructor(
     @InjectModel(HoursModel) private hoursModel: typeof HoursModel,
     @InjectModel(RateModel) private rateModel: typeof RateModel,
+    @InjectModel(UserModel) private userModel: typeof UserModel,
     private projectService: ProjectsService,
   ) {}
 
@@ -53,15 +55,66 @@ export class HoursService {
     await hours.destroy();
   }
 
+  reduceHoursByProject(hours: HoursModel[]) {
+    return hours.reduce((acc, hour) => {
+      const project = hour.project;
+
+      const existProject = acc.find((p) => p.name === project.name);
+      if (existProject) {
+        existProject.hours.push({
+          value: hour.value,
+          date: hour.date,
+        });
+      } else {
+        acc.push({
+          id: project.id,
+          name: project.name,
+          hours: [{ value: hour.value, date: hour.date }],
+        });
+      }
+      return acc;
+    }, [] as { id: number; name: string; hours: { value: number; date: Date }[] }[]);
+  }
+
   async getAllHours() {
-    return await this.hoursModel.findAll({
-      attributes: { exclude: ['developerId', 'projectId'] },
+    const developers = await this.userModel.findAll({
+      attributes: ['id'],
       include: [
-        { model: UserModel, as: 'developer', attributes: ['id', 'email'] },
+        {
+          model: ProfileModel,
+          as: 'profile',
+          attributes: {
+            exclude: ['id', 'userId', 'phone', 'telegramUsername'],
+          },
+        },
+        {
+          model: HoursModel,
+          as: 'hours',
+          required: true,
+          include: [
+            { model: ProjectsModel, as: 'project', attributes: ['id', 'name'] },
+          ],
+          order: [['date', 'ASC']],
+        },
+      ],
+    });
+
+    return developers.map((developer) => ({
+      id: developer.id,
+      fullName: developer.profile.fullName,
+      projects: this.reduceHoursByProject(developer.hours),
+    }));
+  }
+
+  async getAllDeveloperHours(developerId: number) {
+    const hours = await this.hoursModel.findAll({
+      where: { developerId },
+      include: [
         { model: ProjectsModel, as: 'project', attributes: ['id', 'name'] },
       ],
-      order: [[{ model: ProjectsModel, as: 'project' }, 'name', 'DESC']],
+      order: [['date', 'ASC']],
     });
+    return this.reduceHoursByProject(hours);
   }
 
   async getById(id: number) {

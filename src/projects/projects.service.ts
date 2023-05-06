@@ -54,6 +54,7 @@ export class ProjectsService {
       throw new BadRequestException('Связанный проект не найден');
     }
     await sourceProject.$add('relatedProjects', targetProject.id);
+    return await this.getById(sourceProjectId);
   }
 
   async deleteRelatedProject(sourceProjectId: number, targetProjectId: number) {
@@ -63,6 +64,7 @@ export class ProjectsService {
     if (!value)
       throw new BadRequestException('Не найдена связь между проектами');
     await value.destroy();
+    return await this.getById(sourceProjectId);
   }
 
   async assignDeveloper(userId: number, projectId: number) {
@@ -71,6 +73,7 @@ export class ProjectsService {
     const project = await ProjectsModel.findByPk(projectId);
     if (!project) throw new BadRequestException('Проект не найден');
     await project.$add('developers', developer.id);
+    return await this.getById(project.id);
   }
 
   async dismissDeveloper(userId: number, projectId: number) {

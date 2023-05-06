@@ -24,4 +24,9 @@ export class HoursController {
   async getAllHours() {
     return await this.hoursService.getAllHours();
   }
+
+  @Get(':id')
+  async getAllDeveloperHours(@Param('id') id: number) {
+    return await this.hoursService.getAllDeveloperHours(id);
+  }
 }

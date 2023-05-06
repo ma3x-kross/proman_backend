@@ -118,18 +118,15 @@ export class UsersService {
         {
           model: ProjectsModel,
           as: 'developersProjects',
-          attributes: ['name'],
+          attributes: ['id', 'name', 'status', 'deadline'],
           through: { attributes: [] },
-          include: [
-            {
-              model: HoursModel,
-              as: 'hours',
-              attributes: ['value', 'date', 'developerId'],
-              where: { developerId: id },
-            },
-          ],
         },
-      ].filter(Boolean),
+        {
+          model: ProjectsModel,
+          as: 'projects',
+          attributes: ['id', 'name', 'status', 'deadline'],
+        },
+      ],
     });
     if (!user) throw new BadRequestException('Пользователь не найден');
     return user;
