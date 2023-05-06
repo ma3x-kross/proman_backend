@@ -76,7 +76,13 @@ export class HoursService {
     }, [] as { id: number; name: string; hours: { value: number; date: Date }[] }[]);
   }
 
-  async getAllHours() {
+  async getAllHours(start: string, end: string) {
+    let where;
+    if (start && end) {
+      where = {
+        date: { [Op.between]: [start, end] },
+      };
+    }
     const developers = await this.userModel.findAll({
       attributes: ['id'],
       include: [
@@ -91,6 +97,7 @@ export class HoursService {
           model: HoursModel,
           as: 'hours',
           required: true,
+          where,
           include: [
             { model: ProjectsModel, as: 'project', attributes: ['id', 'name'] },
           ],
@@ -106,9 +113,17 @@ export class HoursService {
     }));
   }
 
-  async getAllDeveloperHours(developerId: number) {
+  async getAllDeveloperHours(developerId: number, start: string, end: string) {
+    let where: any = { developerId };
+
+    if (start && end) {
+      where.date = {
+        [Op.between]: [start, end],
+      };
+    }
+
     const hours = await this.hoursModel.findAll({
-      where: { developerId },
+      where,
       include: [
         { model: ProjectsModel, as: 'project', attributes: ['id', 'name'] },
       ],

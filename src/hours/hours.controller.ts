@@ -1,4 +1,12 @@
-import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Query,
+} from '@nestjs/common';
 import { HoursService } from './hours.service';
 import { AddHoursDto } from './dto/add.hours.dto';
 import { Auth } from '../auth/decorators/auth.decorator';
@@ -21,12 +29,16 @@ export class HoursController {
   }
 
   @Get()
-  async getAllHours() {
-    return await this.hoursService.getAllHours();
+  async getAllHours(@Query('start') start: string, @Query('end') end: string) {
+    return await this.hoursService.getAllHours(start, end);
   }
 
-  @Get(':id')
-  async getAllDeveloperHours(@Param('id') id: number) {
-    return await this.hoursService.getAllDeveloperHours(id);
+  @Get('developer/:id')
+  async getAllDeveloperHours(
+    @Param('id') id: number,
+    @Query('start') start: string,
+    @Query('end') end: string,
+  ) {
+    return await this.hoursService.getAllDeveloperHours(id, start, end);
   }
 }
