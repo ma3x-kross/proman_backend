@@ -20,13 +20,13 @@ import { User } from './decorators/user.decorator';
 export class UsersController {
   constructor(private userService: UsersService) {}
 
-  @Auth('ADMIN')
+  // @Auth('ADMIN')
   @Post('invite')
   async invite(@Body() dto: InviteUserDto) {
     return await this.userService.invite(dto);
   }
 
-  @Auth('ADMIN', 'MANAGER')
+  // @Auth('ADMIN', 'MANAGER')
   @Get()
   async getAll(@Query('role') role: string) {
     const users = await this.userService.getAll(role);
