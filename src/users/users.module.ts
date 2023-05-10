@@ -10,12 +10,18 @@ import { AuthModule } from '../auth/auth.module';
 import { MailModule } from '../mail/mail.module';
 import { ProfileModule } from '../profile/profile.module';
 import { PayrollModule } from '../payroll/payroll.module';
+import { RateModel } from '../payroll/models/rate.model';
 
 @Module({
   providers: [UsersService],
   controllers: [UsersController],
   imports: [
-    SequelizeModule.forFeature([UserModel, RolesModel, UserRolesModel]),
+    SequelizeModule.forFeature([
+      UserModel,
+      RolesModel,
+      UserRolesModel,
+      RateModel,
+    ]),
     forwardRef(() => AuthModule),
     RolesModule,
     MailModule,

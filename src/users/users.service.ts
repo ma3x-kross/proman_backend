@@ -16,7 +16,6 @@ import { RolesModel } from '../roles/models/roles.model';
 import { ProfileModel } from '../profile/profile.model';
 import { userQueryOptions } from '../utils/query.options';
 import { ProjectsModel } from '../projects/models/projects.model';
-import { HoursModel } from '../hours/hours.model';
 import { RateModel } from '../payroll/models/rate.model';
 
 @Injectable()
@@ -27,6 +26,7 @@ export class UsersService {
     private mailService: MailService,
     private profileService: ProfileService,
     private payrollService: PayrollService,
+    @InjectModel(RateModel) private rateModel: typeof RateModel,
   ) {}
 
   // async create(dto: RegisterUserDto) {
@@ -167,6 +167,12 @@ export class UsersService {
     const user = await this.userModel.findByPk(id, { include: { all: true } });
     if (!user) throw new BadRequestException('Пользователь не найден');
     if (user.profile) await this.profileService.delete(user.id);
+    if (user.developerRates) {
+      const rates = await this.rateModel.findAll({
+        where: { developerId: user.id },
+      });
+      rates.forEach(async (rate) => await rate.destroy());
+    }
     await user.destroy();
   }
 
