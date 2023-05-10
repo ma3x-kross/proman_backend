@@ -2,6 +2,7 @@ import { RolesModel } from '../roles/models/roles.model';
 import { ProfileModel } from '../profile/profile.model';
 import { UserModel } from '../users/user.model';
 import { ProjectsModel } from '../projects/models/projects.model';
+import { RateModel } from '../payroll/models/rate.model';
 
 export const userQueryOptions = {
   attributes: ['id', 'email'],

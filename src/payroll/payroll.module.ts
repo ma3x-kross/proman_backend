@@ -5,12 +5,13 @@ import { SequelizeModule } from '@nestjs/sequelize';
 import { RateModel } from './models/rate.model';
 import { UsersModule } from '../users/users.module';
 import { AuthModule } from '../auth/auth.module';
+import { HoursModel } from '../hours/hours.model';
 
 @Module({
   providers: [PayrollService],
   controllers: [PayrollController],
   imports: [
-    SequelizeModule.forFeature([RateModel]),
+    SequelizeModule.forFeature([RateModel, HoursModel]),
     forwardRef(() => UsersModule),
     forwardRef(() => AuthModule),
   ],

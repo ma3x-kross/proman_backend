@@ -6,6 +6,7 @@ import { HoursModel } from './hours.model';
 import { ProjectsModule } from '../projects/projects.module';
 import { RateModel } from '../payroll/models/rate.model';
 import { UserModel } from '../users/user.model';
+import { AuthModule } from '../auth/auth.module';
 
 @Module({
   providers: [HoursService],
@@ -13,6 +14,7 @@ import { UserModel } from '../users/user.model';
   imports: [
     SequelizeModule.forFeature([HoursModel, RateModel, UserModel]),
     ProjectsModule,
+    AuthModule,
   ],
 })
 export class HoursModule {}

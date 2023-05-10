@@ -16,26 +16,38 @@ import { User } from '../users/decorators/user.decorator';
 export class HoursController {
   constructor(private hoursService: HoursService) {}
 
-  @Auth()
+  @Auth('DEVELOPER')
   @Post()
   async addHours(@User('id') id: number, @Body() dto: AddHoursDto) {
     return await this.hoursService.addHours(id, dto);
   }
 
-  @Auth()
+  @Auth('DEVELOPER')
   @Delete(':id')
   async delete(@Param('id') id: number) {
     await this.hoursService.deleteHours(id);
   }
 
+  @Auth('ADMIN')
   @Get()
   async getAllHours(@Query('start') start: string, @Query('end') end: string) {
     return await this.hoursService.getAllHours(start, end);
   }
 
+  @Auth('DEVELOPER', 'ADMIN')
   @Get('developer/:id')
   async getAllDeveloperHours(
     @Param('id') id: number,
+    @Query('start') start: string,
+    @Query('end') end: string,
+  ) {
+    return await this.hoursService.getAllDeveloperHours(id, start, end);
+  }
+
+  @Auth()
+  @Get('/my-hours')
+  async getMyHours(
+    @User('id') id: number,
     @Query('start') start: string,
     @Query('end') end: string,
   ) {

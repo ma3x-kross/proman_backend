@@ -62,6 +62,7 @@ export class HoursService {
       const existProject = acc.find((p) => p.name === project.name);
       if (existProject) {
         existProject.hours.push({
+          id: hour.id,
           value: hour.value,
           date: hour.date,
         });
@@ -69,11 +70,11 @@ export class HoursService {
         acc.push({
           id: project.id,
           name: project.name,
-          hours: [{ value: hour.value, date: hour.date }],
+          hours: [{ id: hour.id, value: hour.value, date: hour.date }],
         });
       }
       return acc;
-    }, [] as { id: number; name: string; hours: { value: number; date: Date }[] }[]);
+    }, [] as { id: number; name: string; hours: { id: number; value: number; date: Date }[] }[]);
   }
 
   async getAllHours(start: string, end: string) {

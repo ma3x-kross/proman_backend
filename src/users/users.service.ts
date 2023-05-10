@@ -17,6 +17,7 @@ import { ProfileModel } from '../profile/profile.model';
 import { userQueryOptions } from '../utils/query.options';
 import { ProjectsModel } from '../projects/models/projects.model';
 import { HoursModel } from '../hours/hours.model';
+import { RateModel } from '../payroll/models/rate.model';
 
 @Injectable()
 export class UsersService {
@@ -111,6 +112,8 @@ export class UsersService {
   }
 
   async getOne(id: number) {
+    const today = new Date(); // Получение текущей даты
+    const formattedDate = today.toISOString().slice(0, 10);
     const user = await this.userModel.findByPk(id, {
       ...userQueryOptions,
       include: [
@@ -125,6 +128,14 @@ export class UsersService {
           model: ProjectsModel,
           as: 'projects',
           attributes: ['id', 'name', 'status', 'deadline'],
+        },
+        {
+          model: RateModel,
+          as: 'developerRates',
+          attributes: ['value', 'date'],
+          where: { date: { [Op.lte]: formattedDate } },
+          separate: true,
+          order: [['date', 'DESC']],
         },
       ],
     });
