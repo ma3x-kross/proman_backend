@@ -23,7 +23,7 @@ export class PayrollService {
   async addRate(dto: AddRateDto) {
     await this.userService.getOne(dto.developerId);
     const rate = await this.rateModel.create(dto);
-    return rate;
+    return await this.userService.getOne(dto.developerId);
   }
 
   async calculateSalary(
