@@ -26,7 +26,7 @@ export class HoursModel extends Model<HoursModel, HoursCreationAttr> {
   })
   id: number;
 
-  @Column({ type: DataType.INTEGER, allowNull: false })
+  @Column({ type: DataType.FLOAT, allowNull: false })
   value: number;
 
   @Column({ type: DataType.DATEONLY, allowNull: false })

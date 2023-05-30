@@ -36,7 +36,8 @@ export class PayrollService {
       where: {
         developerId: developerId,
         date: {
-          [Op.between]: [start, end],
+          [Op.gte]: start,
+          [Op.lt]: end,
         },
       },
     });

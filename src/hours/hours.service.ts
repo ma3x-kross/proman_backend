@@ -52,6 +52,18 @@ export class HoursService {
 
   async deleteHours(id: number) {
     const hours = await this.getById(id);
+
+    const project = await this.projectService.getById(hours.projectId);
+
+    const rate = await this.rateModel.findOne({
+      where: { developerId: hours.developerId, date: { [Op.lte]: hours.date } },
+      order: [['date', 'DESC']],
+    });
+
+    project.workedHours -= hours.value;
+    project.salary -= hours.value * rate.value;
+    await project.save();
+
     await hours.destroy();
   }
 

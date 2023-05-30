@@ -63,13 +63,13 @@ export class ProjectsModel extends Model<ProjectsModel, ProjectsCreationAttr> {
   @Column({ type: DataType.DATEONLY, allowNull: true })
   deadline: Date;
 
-  @Column({ type: DataType.INTEGER, allowNull: false })
+  @Column({ type: DataType.FLOAT, allowNull: false })
   plannedHours: number;
 
-  @Column({ type: DataType.INTEGER, defaultValue: 0 })
+  @Column({ type: DataType.FLOAT, defaultValue: 0 })
   workedHours: number;
 
-  @Column({ type: DataType.INTEGER, defaultValue: 0 })
+  @Column({ type: DataType.FLOAT, defaultValue: 0 })
   salary: number;
 
   @Column({ type: DataType.INTEGER, allowNull: false })
@@ -78,7 +78,7 @@ export class ProjectsModel extends Model<ProjectsModel, ProjectsCreationAttr> {
   @Column({
     type: DataType.VIRTUAL,
     get() {
-      return this.getDataValue('workedHours') * this.getDataValue('rate');
+      return this.getDataValue('plannedHours') * this.getDataValue('rate');
     },
   })
   cost: number;
@@ -87,7 +87,7 @@ export class ProjectsModel extends Model<ProjectsModel, ProjectsCreationAttr> {
     type: DataType.VIRTUAL,
     get() {
       return (
-        this.getDataValue('workedHours') * this.getDataValue('rate') -
+        this.getDataValue('plannedHours') * this.getDataValue('rate') -
         this.getDataValue('salary')
       );
     },
