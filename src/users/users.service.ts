@@ -29,20 +29,7 @@ export class UsersService {
     @InjectModel(RateModel) private rateModel: typeof RateModel,
   ) {}
 
-  // async create(dto: RegisterUserDto) {
-  //   const existUser = await this.getByEmail(dto.email);
-  //   if (existUser)
-  //     throw new BadRequestException(
-  //       'Пользователь с таким email уже существует',
-  //     );
-  //   const user = await this.userModel.create(dto);
-  //   const role = await this.rolesService.getByValue('DEVELOPER');
-  //   await user.$set('roles', role.id);
-  //   await this.mailService.sendConfirmMail(user);
-  //   return await this.userModel.findByPk(user.id, { include: ['roles'] });
-  // }
-
-  async invite({ email, role }: InviteUserDto) {
+  async invite({ email, role, rate }: InviteUserDto) {
     const existUser = await this.getByEmail(email);
     if (existUser)
       throw new BadRequestException(
@@ -61,7 +48,7 @@ export class UsersService {
     if (role === 'DEVELOPER') {
       await this.payrollService.addRate({
         developerId: user.id,
-        value: 100,
+        value: rate ? rate : 0,
         date: new Date(),
       });
     }
