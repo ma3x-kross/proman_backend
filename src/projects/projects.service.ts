@@ -8,6 +8,7 @@ import { UpdateProjectDto } from './dto/update.project.dto';
 import { RelatedProjectsModel } from './models/related.projects.model';
 import { Op } from 'sequelize';
 import { projectQueryOptions } from '../utils/query.options';
+import { HoursModel } from '../hours/hours.model';
 
 @Injectable()
 export class ProjectsService {
@@ -18,6 +19,8 @@ export class ProjectsService {
     private developerProjectsModel: typeof DeveloperProjectsModel,
     @InjectModel(RelatedProjectsModel)
     private relatedProjectModel: typeof RelatedProjectsModel,
+    @InjectModel(HoursModel)
+    private hoursModel: typeof HoursModel,
   ) {}
 
   async create(dto: CreateProjectDto) {
@@ -126,6 +129,8 @@ export class ProjectsService {
   async deleteProject(id: number) {
     const project = await this.projectsModel.findByPk(id);
     if (!project) throw new BadRequestException('Проект не найден');
+    const hours = await this.hoursModel.findAll({ where: { projectId: id } });
+    hours.forEach(async (hour) => await hour.destroy());
     await project.destroy();
   }
 
